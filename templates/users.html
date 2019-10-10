@@ -1,0 +1,15 @@
+{{block "users" .}}
+{{template "header"}}
+
+<h1>Users</h1>
+<ul>
+    {{range .}}
+    <li class="red">
+        <p>{{ .ID }}</p>
+        <p>{{ .Username }}</p>
+    </li>
+    {{end}}
+</ul>
+
+{{template "footer"}}
+{{end}}
