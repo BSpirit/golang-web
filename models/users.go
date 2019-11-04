@@ -9,14 +9,15 @@ import (
 type User struct {
 	ID       int64
 	Username string
+	Age      sql.NullInt64
 }
 
 func (u *User) Create(db *sql.DB) error {
-	stmt, err := db.Prepare("INSERT INTO users(username) VALUES(?)")
+	stmt, err := db.Prepare("INSERT INTO users(username, age) VALUES(?, ?)")
 	if err != nil {
 		return fmt.Errorf("user.Create: could not prepare query\n\t%s", err)
 	}
-	res, err := stmt.Exec(u.Username)
+	res, err := stmt.Exec(u.Username, u.Age)
 	if err != nil {
 		return fmt.Errorf("user.Create: could not execute query\n\t%s", err)
 	}
@@ -33,11 +34,11 @@ func (u *User) Update(db *sql.DB) error {
 	if u.ID == 0 {
 		return errors.New("user.Update: no ID")
 	}
-	stmt, err := db.Prepare("UPDATE users SET username=? WHERE id=?")
+	stmt, err := db.Prepare("UPDATE users SET username=?, age=? WHERE id=?")
 	if err != nil {
 		return fmt.Errorf("user.Update: could not prepare query\n\t%s", err)
 	}
-	_, err = stmt.Exec(u.Username, u.ID)
+	_, err = stmt.Exec(u.Username, u.Age, u.ID)
 	if err != nil {
 		return fmt.Errorf("user.Update: could not execute query\n\t%s", err)
 	}
@@ -70,7 +71,7 @@ func GetUser(pk int64, db *sql.DB) (*User, error) {
 	defer rows.Close()
 	user := &User{}
 	for rows.Next() {
-		err := rows.Scan(&user.ID, &user.Username)
+		err := rows.Scan(&user.ID, &user.Age, &user.Username)
 		if err != nil {
 			return nil, fmt.Errorf("GetUser: could not scan row\n\t%s", err)
 		}
@@ -115,7 +116,7 @@ func GetAllUsers(db *sql.DB) ([]*User, error) {
 	users := make([]*User, 0)
 	for rows.Next() {
 		user := &User{}
-		err := rows.Scan(&user.ID, &user.Username)
+		err := rows.Scan(&user.ID, &user.Username, &user.Age)
 		if err != nil {
 			return nil, fmt.Errorf("GetAllUsers: could not scan row\n\t%s", err)
 		}

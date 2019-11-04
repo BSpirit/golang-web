@@ -3,7 +3,8 @@ DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
   id INTEGER NOT NULL PRIMARY KEY,
-  username VARCHAR NOT NULL
+  username VARCHAR NOT NULL,
+  age INTEGER
 );
 
 CREATE TABLE products (

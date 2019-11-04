@@ -16,7 +16,9 @@ type env struct {
 
 func createUserHandler(env *env) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user := models.User{Username: "Tony"}
+		user := models.User{Username: "NullTest"}
+		user.Create(env.db)
+		user = models.User{Username: "Tony", Age: models.NewNullInt64("29")}
 		if err := user.Create(env.db); err != nil {
 			log.Printf("createUserHandler:\n\t%s", err)
 			http.Error(w, http.StatusText(500), 500)
