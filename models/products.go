@@ -15,15 +15,15 @@ type Product struct {
 func (p *Product) Create(db *sql.DB) error {
 	stmt, err := db.Prepare("INSERT INTO products(name, user_id) VALUES(?, ?)")
 	if err != nil {
-		return fmt.Errorf("product.Create: could not prepare query\n\t%s", err)
+		return fmt.Errorf("Product.Create: could not prepare query\n\t%s", err)
 	}
 	res, err := stmt.Exec(p.Name, p.UserID)
 	if err != nil {
-		return fmt.Errorf("product.Create: could not execute query\n\t%s", err)
+		return fmt.Errorf("Product.Create: could not execute query\n\t%s", err)
 	}
 	id, err := res.LastInsertId()
 	if err != nil {
-		return fmt.Errorf("product.Create: could not retrieve last inserted id\n\t%s", err)
+		return fmt.Errorf("Product.Create: could not retrieve last inserted id\n\t%s", err)
 	}
 	p.ID = id
 
@@ -32,15 +32,15 @@ func (p *Product) Create(db *sql.DB) error {
 
 func (p *Product) Update(db *sql.DB) error {
 	if p.ID == 0 {
-		return errors.New("product.Update: no ID")
+		return errors.New("Product.Update: no ID")
 	}
 	stmt, err := db.Prepare("UPDATE products SET name=?, user_id=? WHERE id=?")
 	if err != nil {
-		return fmt.Errorf("product.Update: could not prepare query\n\t%s", err)
+		return fmt.Errorf("Product.Update: could not prepare query\n\t%s", err)
 	}
 	_, err = stmt.Exec(p.Name, p.UserID, p.ID)
 	if err != nil {
-		return fmt.Errorf("product.Update: could not execute query\n\t%s", err)
+		return fmt.Errorf("Product.Update: could not execute query\n\t%s", err)
 	}
 
 	return nil
@@ -48,15 +48,15 @@ func (p *Product) Update(db *sql.DB) error {
 
 func (p *Product) Delete(db *sql.DB) error {
 	if p.ID == 0 {
-		return errors.New("product.Delete: no ID")
+		return errors.New("Product.Delete: no ID")
 	}
 	stmt, err := db.Prepare("DELETE FROM products WHERE id=?")
 	if err != nil {
-		return fmt.Errorf("product.Delete: could not prepare query\n\t%s", err)
+		return fmt.Errorf("Product.Delete: could not prepare query\n\t%s", err)
 	}
 	_, err = stmt.Exec(p.ID)
 	if err != nil {
-		return fmt.Errorf("product.Delete: could not execute query\n\t%s", err)
+		return fmt.Errorf("Product.Delete: could not execute query\n\t%s", err)
 	}
 	p.ID = 0
 

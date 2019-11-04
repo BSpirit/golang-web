@@ -15,15 +15,15 @@ type User struct {
 func (u *User) Create(db *sql.DB) error {
 	stmt, err := db.Prepare("INSERT INTO users(username, age) VALUES(?, ?)")
 	if err != nil {
-		return fmt.Errorf("user.Create: could not prepare query\n\t%s", err)
+		return fmt.Errorf("User.Create: could not prepare query\n\t%s", err)
 	}
 	res, err := stmt.Exec(u.Username, u.Age)
 	if err != nil {
-		return fmt.Errorf("user.Create: could not execute query\n\t%s", err)
+		return fmt.Errorf("User.Create: could not execute query\n\t%s", err)
 	}
 	id, err := res.LastInsertId()
 	if err != nil {
-		return fmt.Errorf("user.Create: could not retrieve last inserted id\n\t%s", err)
+		return fmt.Errorf("User.Create: could not retrieve last inserted id\n\t%s", err)
 	}
 	u.ID = id
 
@@ -32,15 +32,15 @@ func (u *User) Create(db *sql.DB) error {
 
 func (u *User) Update(db *sql.DB) error {
 	if u.ID == 0 {
-		return errors.New("user.Update: no ID")
+		return errors.New("User.Update: no ID")
 	}
 	stmt, err := db.Prepare("UPDATE users SET username=?, age=? WHERE id=?")
 	if err != nil {
-		return fmt.Errorf("user.Update: could not prepare query\n\t%s", err)
+		return fmt.Errorf("User.Update: could not prepare query\n\t%s", err)
 	}
 	_, err = stmt.Exec(u.Username, u.Age, u.ID)
 	if err != nil {
-		return fmt.Errorf("user.Update: could not execute query\n\t%s", err)
+		return fmt.Errorf("User.Update: could not execute query\n\t%s", err)
 	}
 
 	return nil
@@ -48,15 +48,15 @@ func (u *User) Update(db *sql.DB) error {
 
 func (u *User) Delete(db *sql.DB) error {
 	if u.ID == 0 {
-		return errors.New("user.Delete: no ID")
+		return errors.New("User.Delete: no ID")
 	}
 	stmt, err := db.Prepare("DELETE FROM users WHERE id=?")
 	if err != nil {
-		return fmt.Errorf("user.Delete: could not prepare query\n\t%s", err)
+		return fmt.Errorf("User.Delete: could not prepare query\n\t%s", err)
 	}
 	_, err = stmt.Exec(u.ID)
 	if err != nil {
-		return fmt.Errorf("user.Delete: could not execute query\n\t%s", err)
+		return fmt.Errorf("User.Delete: could not execute query\n\t%s", err)
 	}
 	u.ID = 0
 
@@ -76,7 +76,7 @@ func GetUser(pk int64, db *sql.DB) (*User, error) {
 func (u *User) GetRelatedProducts(db *sql.DB) ([]*Product, error) {
 	rows, err := db.Query("SELECT * FROM products WHERE user_id=?", u.ID)
 	if err != nil {
-		return nil, fmt.Errorf("GetRelatedProducts: could not execute query\n\t%s", err)
+		return nil, fmt.Errorf("User.GetRelatedProducts: could not execute query\n\t%s", err)
 	}
 	defer rows.Close()
 	products := make([]*Product, 0)
@@ -84,13 +84,13 @@ func (u *User) GetRelatedProducts(db *sql.DB) ([]*Product, error) {
 		product := &Product{}
 		err := rows.Scan(&product.ID, &product.Name, &product.UserID)
 		if err != nil {
-			return nil, fmt.Errorf("GetRelatedProducts: could not scan row\n\t%s", err)
+			return nil, fmt.Errorf("User.GetRelatedProducts: could not scan row\n\t%s", err)
 		}
 		products = append(products, product)
 	}
 	err = rows.Err()
 	if err != nil {
-		return nil, fmt.Errorf("GetRelatedProducts: got error when fetching rows\n\t%s", err)
+		return nil, fmt.Errorf("User.GetRelatedProducts: got error when fetching rows\n\t%s", err)
 	}
 
 	return products, nil
