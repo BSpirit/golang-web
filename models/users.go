@@ -64,21 +64,10 @@ func (u *User) Delete(db *sql.DB) error {
 }
 
 func GetUser(pk int64, db *sql.DB) (*User, error) {
-	rows, err := db.Query("SELECT * FROM users WHERE id = ?", pk)
+	user := &User{}
+	err := db.QueryRow("SELECT * FROM users WHERE id = ?", pk).Scan(&user.ID, &user.Username, &user.Age)
 	if err != nil {
 		return nil, fmt.Errorf("GetUser: could not execute query\n\t%s", err)
-	}
-	defer rows.Close()
-	user := &User{}
-	for rows.Next() {
-		err := rows.Scan(&user.ID, &user.Age, &user.Username)
-		if err != nil {
-			return nil, fmt.Errorf("GetUser: could not scan row\n\t%s", err)
-		}
-	}
-	err = rows.Err()
-	if err != nil {
-		return nil, fmt.Errorf("GetUser: got error when fetching row\n\t%s", err)
 	}
 
 	return user, nil

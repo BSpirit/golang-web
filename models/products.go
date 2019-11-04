@@ -64,21 +64,10 @@ func (p *Product) Delete(db *sql.DB) error {
 }
 
 func GetProduct(pk int64, db *sql.DB) (*Product, error) {
-	rows, err := db.Query("SELECT * FROM products WHERE id = ?", pk)
+	product := &Product{}
+	err := db.QueryRow("SELECT * FROM products WHERE id = ?", pk).Scan(&product.ID, &product.Name, &product.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("GetProduct: could not execute query\n\t%s", err)
-	}
-	defer rows.Close()
-	product := &Product{}
-	for rows.Next() {
-		err := rows.Scan(&product.ID, &product.Name, &product.UserID)
-		if err != nil {
-			return nil, fmt.Errorf("GetProduct: could not scan row\n\t%s", err)
-		}
-	}
-	err = rows.Err()
-	if err != nil {
-		return nil, fmt.Errorf("GetProduct: got error when fetching row\n\t%s", err)
 	}
 
 	return product, nil
