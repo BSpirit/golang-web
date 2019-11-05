@@ -13,8 +13,12 @@ type StatusError struct {
 }
 
 // Allows StatusError to satisfy the error interface.
-func (se StatusError) Error() string {
+func (se *StatusError) Error() string {
 	return se.Err.Error()
+}
+
+func (se *StatusError) Unwrap() error {
+	return se.Err
 }
 
 type Env struct {
@@ -31,7 +35,7 @@ type Handler struct {
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err := h.HandlerFunc(h.Env, w, r)
 	if err != nil {
-		log.Printf("%s", err.Err)
+		log.Printf("%s", err.Unwrap())
 		http.Error(w, http.StatusText(err.Code), err.Code)
 	}
 }
