@@ -1,0 +1,17 @@
+{{block "user_form" .}}
+{{template "header"}}
+
+<form action=/create_user method=POST>
+    <label>
+        Username:
+        <input name="username">
+    </label>
+    <label>
+        Age:
+        <input name="age">
+    </label>
+    <button type=submit>Submit form</button>
+</form>
+
+{{template "footer"}}
+{{end}}

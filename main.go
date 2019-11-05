@@ -1,92 +1,31 @@
 package main
 
 import (
-	"database/sql"
 	"html/template"
 	"log"
 	"net/http"
-	"strconv"
+	"web/handlers"
 	"web/models"
 )
 
-type env struct {
-	db        *sql.DB
-	templates *template.Template
-}
-
-func createUserHandler(env *env) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user := models.User{Username: "NullTest"}
-		user.Create(env.db)
-		user = models.User{Username: "Tony", Age: models.NewNullInt64("29")}
-		if err := user.Create(env.db); err != nil {
-			log.Printf("createUserHandler:\n\t%s", err)
-			http.Error(w, http.StatusText(500), 500)
-			return
-		}
-
-		var product models.Product
-		product = models.Product{Name: "PS4", UserID: user.ID}
-		product.Create(env.db)
-		product = models.Product{Name: "SWITCH", UserID: user.ID}
-		product.Create(env.db)
-
-		http.Redirect(w, r, "/users", http.StatusSeeOther)
-	})
-}
-
-func usersHandler(env *env) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		users, err := models.GetAllUsers(env.db)
-		if err != nil {
-			log.Printf("usersHandler:\n\t%s", err)
-			http.Error(w, http.StatusText(500), 500)
-			return
-		}
-
-		env.templates.ExecuteTemplate(w, "users", users)
-	})
-}
-
-func userHandler(env *env) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		s := r.URL.Query().Get("id")
-		id, _ := strconv.ParseInt(s, 10, 64)
-		user, err := models.GetUser(id, env.db)
-		if err != nil {
-			log.Printf("usersHandler:\n\t%s", err)
-			http.Error(w, http.StatusText(500), 500)
-			return
-		}
-		products, _ := user.GetRelatedProducts(env.db)
-		env.templates.ExecuteTemplate(w, "user", struct {
-			User     *models.User
-			Products []*models.Product
-		}{user, products})
-	})
-}
-
 func main() {
-	env := &env{}
-
+	env := &handlers.Env{}
 	var err error
-	env.db, err = models.InitDB("db/test.db")
+
+	env.DB, err = models.InitDB("db/test.db")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer env.db.Close()
+	defer env.DB.Close()
 
-	env.templates = template.Must(template.ParseGlob("./templates/*"))
-
-	// With gorilla mux
-	// r := mux.NewRouter()
-	// r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
+	env.Templates = template.Must(template.ParseGlob("./templates/*"))
 
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
-	http.Handle("/create_user", createUserHandler(env))
-	http.Handle("/users", usersHandler(env))
-	http.Handle("/detail", userHandler(env))
+	http.Handle("/fill_db", handlers.Handler{Env: env, HandlerFunc: handlers.FillDBHandler})
+	http.Handle("/create_user", handlers.Handler{Env: env, HandlerFunc: handlers.CreateUserHandler})
+	http.Handle("/users", handlers.Handler{Env: env, HandlerFunc: handlers.UsersHandler})
+	http.Handle("/user", handlers.Handler{Env: env, HandlerFunc: handlers.UserHandler})
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
