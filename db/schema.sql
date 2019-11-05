@@ -10,6 +10,6 @@ CREATE TABLE users (
 CREATE TABLE products (
   id INTEGER NOT NULL PRIMARY KEY,
   name VARCHAR NOT NULL,
-  user_id INTEGER,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  user_id INTEGER NOT NULL,
+  CONSTRAINT fk_products_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
