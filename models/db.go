@@ -22,13 +22,13 @@ func InitDB(dataSourceName string) (*sql.DB, error) {
 	return db, nil
 }
 
-func SelectQuery(table string, entries map[string][]string) (string, []interface{}) {
+func SelectQuery(tableName string, whereEntries map[string][]string) (string, []interface{}) {
 	var values []interface{}
 	var whereClause []string
-	query := "SELECT * FROM " + table
-	if len(entries) != 0 {
+	query := "SELECT * FROM " + tableName
+	if len(whereEntries) != 0 {
 		query += " WHERE "
-		for key, value := range entries {
+		for key, value := range whereEntries {
 			if value[0] != "" {
 				values = append(values, value[0])
 				whereClause = append(whereClause, fmt.Sprintf("%s LIKE '%%' || ? || '%%'", key))
@@ -37,7 +37,6 @@ func SelectQuery(table string, entries map[string][]string) (string, []interface
 	}
 
 	query = query + strings.Join(whereClause, " AND ")
-
 	return query, values
 }
 
