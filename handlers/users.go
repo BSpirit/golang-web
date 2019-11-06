@@ -53,7 +53,11 @@ func FillDBHandler(env *Env, w http.ResponseWriter, r *http.Request) *StatusErro
 
 func CreateUserHandler(env *Env, w http.ResponseWriter, r *http.Request) *StatusError {
 	if r.Method == http.MethodGet {
-		env.Templates.ExecuteTemplate(w, "user_form", nil)
+		err := env.Templates.ExecuteTemplate(w, "create_user", nil)
+		if err != nil {
+			return &StatusError{Code: 500, Err: fmt.Errorf("CreateUserHandler:\n\t%s", err)}
+		}
+
 	} else if r.Method == http.MethodPost {
 		user := models.User{
 			Username: r.FormValue("username"),
@@ -72,12 +76,20 @@ func CreateUserHandler(env *Env, w http.ResponseWriter, r *http.Request) *Status
 }
 
 func UsersHandler(env *Env, w http.ResponseWriter, r *http.Request) *StatusError {
-	users, err := models.GetAllUsers(env.DB)
+	err := r.ParseForm()
 	if err != nil {
 		return &StatusError{Code: 500, Err: fmt.Errorf("UsersHandler:\n\t%s", err)}
 	}
 
-	env.Templates.ExecuteTemplate(w, "users", users)
+	users, err := models.GetUsersByFilter(r.Form, env.DB)
+	if err != nil {
+		return &StatusError{Code: 500, Err: fmt.Errorf("UsersHandler:\n\t%s", err)}
+	}
+
+	err = env.Templates.ExecuteTemplate(w, "filter_users", users)
+	if err != nil {
+		return &StatusError{Code: 500, Err: fmt.Errorf("UsersHandler:\n\t%s", err)}
+	}
 
 	return nil
 }
@@ -99,10 +111,13 @@ func UserHandler(env *Env, w http.ResponseWriter, r *http.Request) *StatusError 
 		return &StatusError{Code: 500, Err: fmt.Errorf("UserHandler:\n\t%s", err)}
 	}
 
-	env.Templates.ExecuteTemplate(w, "user", struct {
+	err = env.Templates.ExecuteTemplate(w, "user", struct {
 		User     *models.User
 		Products []*models.Product
 	}{user, products})
+	if err != nil {
+		return &StatusError{Code: 500, Err: fmt.Errorf("UserHandler:\n\t%s", err)}
+	}
 
 	return nil
 }

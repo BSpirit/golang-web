@@ -12,7 +12,7 @@ func main() {
 	env := &handlers.Env{}
 	var err error
 
-	env.Templates = template.Must(template.ParseGlob("./templates/*"))
+	env.Templates = template.Must(template.ParseGlob("./templates/*/*.html"))
 	env.DB, err = models.InitDB("db/test.db?_foreign_keys=on")
 	if err != nil {
 		log.Fatal(err)

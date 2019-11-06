@@ -1,7 +1,7 @@
-{{block "user_form" .}}
+{{block "filter_users" .}}
 {{template "header"}}
 
-<form action=/create_user method=POST>
+<form action=/users method=GET>
     <label>
         Username:
         <input name="username">
@@ -12,6 +12,8 @@
     </label>
     <button type=submit>Submit form</button>
 </form>
+
+{{template "users_list" . }}
 
 {{template "footer"}}
 {{end}}

@@ -96,10 +96,11 @@ func (u *User) GetRelatedProducts(db *sql.DB) ([]*Product, error) {
 	return products, nil
 }
 
-func GetAllUsers(db *sql.DB) ([]*User, error) {
-	rows, err := db.Query("SELECT * FROM users")
+func GetUsersByFilter(entries map[string][]string, db *sql.DB) ([]*User, error) {
+	query, values := SelectQuery("users", entries)
+	rows, err := db.Query(query, values...)
 	if err != nil {
-		return nil, fmt.Errorf("GetAllUsers: could not execute query\n\t%s", err)
+		return nil, fmt.Errorf("GetUsers: could not execute query\n\t%s", err)
 	}
 	defer rows.Close()
 	users := make([]*User, 0)
@@ -107,13 +108,13 @@ func GetAllUsers(db *sql.DB) ([]*User, error) {
 		user := &User{}
 		err := rows.Scan(&user.ID, &user.Username, &user.Age)
 		if err != nil {
-			return nil, fmt.Errorf("GetAllUsers: could not scan row\n\t%s", err)
+			return nil, fmt.Errorf("GetUsers: could not scan row\n\t%s", err)
 		}
 		users = append(users, user)
 	}
 	err = rows.Err()
 	if err != nil {
-		return nil, fmt.Errorf("GetAllUsers: got error when fetching rows\n\t%s", err)
+		return nil, fmt.Errorf("GetUsers: got error when fetching rows\n\t%s", err)
 	}
 
 	return users, nil
