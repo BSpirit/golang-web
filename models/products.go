@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"web/utils"
 )
 
 type Product struct {
@@ -15,15 +16,15 @@ type Product struct {
 func (p *Product) Create(db *sql.DB) error {
 	stmt, err := db.Prepare("INSERT INTO products(name, user_id) VALUES(?, ?)")
 	if err != nil {
-		return fmt.Errorf("Product.Create: could not prepare query\n\t%s", err)
+		return fmt.Errorf(utils.Trace(err))
 	}
 	res, err := stmt.Exec(p.Name, p.UserID)
 	if err != nil {
-		return fmt.Errorf("Product.Create: could not execute query\n\t%s", err)
+		return fmt.Errorf(utils.Trace(err))
 	}
 	id, err := res.LastInsertId()
 	if err != nil {
-		return fmt.Errorf("Product.Create: could not retrieve last inserted id\n\t%s", err)
+		return fmt.Errorf(utils.Trace(err))
 	}
 	p.ID = id
 
@@ -32,15 +33,15 @@ func (p *Product) Create(db *sql.DB) error {
 
 func (p *Product) Update(db *sql.DB) error {
 	if p.ID == 0 {
-		return errors.New("Product.Update: no ID")
+		return errors.New("no ID")
 	}
 	stmt, err := db.Prepare("UPDATE products SET name=?, user_id=? WHERE id=?")
 	if err != nil {
-		return fmt.Errorf("Product.Update: could not prepare query\n\t%s", err)
+		return fmt.Errorf(utils.Trace(err))
 	}
 	_, err = stmt.Exec(p.Name, p.UserID, p.ID)
 	if err != nil {
-		return fmt.Errorf("Product.Update: could not execute query\n\t%s", err)
+		return fmt.Errorf(utils.Trace(err))
 	}
 
 	return nil
@@ -48,15 +49,15 @@ func (p *Product) Update(db *sql.DB) error {
 
 func (p *Product) Delete(db *sql.DB) error {
 	if p.ID == 0 {
-		return errors.New("Product.Delete: no ID")
+		return errors.New("no ID")
 	}
 	stmt, err := db.Prepare("DELETE FROM products WHERE id=?")
 	if err != nil {
-		return fmt.Errorf("Product.Delete: could not prepare query\n\t%s", err)
+		return fmt.Errorf(utils.Trace(err))
 	}
 	_, err = stmt.Exec(p.ID)
 	if err != nil {
-		return fmt.Errorf("Product.Delete: could not execute query\n\t%s", err)
+		return fmt.Errorf(utils.Trace(err))
 	}
 	p.ID = 0
 
@@ -67,7 +68,7 @@ func GetProduct(pk int64, db *sql.DB) (*Product, error) {
 	product := &Product{}
 	err := db.QueryRow("SELECT * FROM products WHERE id = ?", pk).Scan(&product.ID, &product.Name, &product.UserID)
 	if err != nil {
-		return nil, fmt.Errorf("GetProduct: could not execute query\n\t%s", err)
+		return nil, fmt.Errorf(utils.Trace(err))
 	}
 
 	return product, nil
@@ -76,7 +77,7 @@ func GetProduct(pk int64, db *sql.DB) (*Product, error) {
 func GetAllProducts(db *sql.DB) ([]*Product, error) {
 	rows, err := db.Query("SELECT * FROM products")
 	if err != nil {
-		return nil, fmt.Errorf("GetAllProducts: could not execute query\n\t%s", err)
+		return nil, fmt.Errorf(utils.Trace(err))
 	}
 	defer rows.Close()
 	products := make([]*Product, 0)
@@ -84,13 +85,13 @@ func GetAllProducts(db *sql.DB) ([]*Product, error) {
 		product := &Product{}
 		err := rows.Scan(&product.ID, &product.Name, &product.UserID)
 		if err != nil {
-			return nil, fmt.Errorf("GetAllProducts: could not scan row\n\t%s", err)
+			return nil, fmt.Errorf(utils.Trace(err))
 		}
 		products = append(products, product)
 	}
 	err = rows.Err()
 	if err != nil {
-		return nil, fmt.Errorf("GetAllProducts: got error when fetching rows\n\t%s", err)
+		return nil, fmt.Errorf(utils.Trace(err))
 	}
 
 	return products, nil
