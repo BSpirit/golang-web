@@ -99,7 +99,7 @@ func (u *User) GetRelatedProducts(db *sql.DB) ([]*Product, error) {
 
 func GetUsersByFilter(entries map[string][]string, db *sql.DB) ([]*User, error) {
 	whereClause, values := WhereClause(entries)
-	rows, err := db.Query("SELCT * FROM users"+whereClause, values...)
+	rows, err := db.Query("SELECT * FROM users"+whereClause, values...)
 	if err != nil {
 		return nil, fmt.Errorf(utils.Trace(err))
 	}
