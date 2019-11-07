@@ -97,8 +97,8 @@ func (u *User) GetRelatedProducts(db *sql.DB) ([]*Product, error) {
 }
 
 func GetUsersByFilter(entries map[string][]string, db *sql.DB) ([]*User, error) {
-	query, values := SelectQuery("users", entries)
-	rows, err := db.Query(query, values...)
+	whereClause, values := WhereClause(entries)
+	rows, err := db.Query("SELECT * FROM users"+whereClause, values...)
 	if err != nil {
 		return nil, fmt.Errorf("GetUsers: could not execute query\n\t%s", err)
 	}

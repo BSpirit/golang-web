@@ -22,24 +22,6 @@ func InitDB(dataSourceName string) (*sql.DB, error) {
 	return db, nil
 }
 
-func SelectQuery(tableName string, whereEntries map[string][]string) (string, []interface{}) {
-	var values []interface{}
-	var whereClause []string
-	query := "SELECT * FROM " + tableName
-	if len(whereEntries) != 0 {
-		query += " WHERE "
-		for key, value := range whereEntries {
-			if value[0] != "" {
-				values = append(values, value[0])
-				whereClause = append(whereClause, fmt.Sprintf("%s LIKE '%%' || ? || '%%'", key))
-			}
-		}
-	}
-
-	query = query + strings.Join(whereClause, " AND ")
-	return query, values
-}
-
 func NewNullInt64(s string) sql.NullInt64 {
 	n, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
@@ -50,4 +32,22 @@ func NewNullInt64(s string) sql.NullInt64 {
 		Int64: n,
 		Valid: true,
 	}
+}
+
+func WhereClause(entries map[string][]string) (string, []interface{}) {
+	var whereClause string
+	var values []interface{}
+
+	if len(entries) != 0 {
+		var clauseBuilder []string
+		for key, value := range entries {
+			if value[0] != "" {
+				values = append(values, value[0])
+				clauseBuilder = append(clauseBuilder, fmt.Sprintf("%s LIKE '%%' || ? || '%%'", key))
+			}
+		}
+		whereClause = " WHERE " + strings.Join(clauseBuilder, " AND ")
+	}
+
+	return whereClause, values
 }
