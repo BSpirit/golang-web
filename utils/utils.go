@@ -6,7 +6,7 @@ import (
 )
 
 func Trace(err error) string {
-	pc := make([]uintptr, 10)
+	pc := make([]uintptr, 1)
 	runtime.Callers(2, pc)
 	f := runtime.FuncForPC(pc[0])
 	_, line := f.FileLine(pc[0])
