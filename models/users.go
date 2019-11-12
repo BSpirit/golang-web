@@ -14,12 +14,7 @@ type User struct {
 }
 
 func (u *User) Create(db *sql.DB) error {
-	stmt, err := db.Prepare("INSERT INTO users(username, age) VALUES(?, ?)")
-	if err != nil {
-		return fmt.Errorf(utils.Trace(err))
-	}
-	defer stmt.Close()
-	res, err := stmt.Exec(u.Username, u.Age)
+	res, err := db.Exec("INSERT INTO users(username, age) VALUES(?, ?)", u.Username, u.Age)
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
 	}
@@ -36,12 +31,7 @@ func (u *User) Update(db *sql.DB) error {
 	if u.ID == 0 {
 		return errors.New("no ID")
 	}
-	stmt, err := db.Prepare("UPDATE users SET username=?, age=? WHERE id=?")
-	if err != nil {
-		return fmt.Errorf(utils.Trace(err))
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec(u.Username, u.Age, u.ID)
+	_, err := db.Exec("UPDATE users SET username=?, age=? WHERE id=?", u.Username, u.Age, u.ID)
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
 	}
@@ -53,12 +43,7 @@ func (u *User) Delete(db *sql.DB) error {
 	if u.ID == 0 {
 		return errors.New("no ID")
 	}
-	stmt, err := db.Prepare("DELETE FROM users WHERE id=?")
-	if err != nil {
-		return fmt.Errorf(utils.Trace(err))
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec(u.ID)
+	_, err := db.Exec("DELETE FROM users WHERE id=?", u.ID)
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
 	}
