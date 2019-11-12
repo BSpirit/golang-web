@@ -23,13 +23,19 @@ func FillDBHandler(env *Env, w http.ResponseWriter, r *http.Request) *StatusErro
 		return &StatusError{Code: 500, Err: fmt.Errorf(utils.Trace(err))}
 	}
 
+	tx, err := env.DB.Begin()
+	if err != nil {
+		return &StatusError{Code: 500, Err: fmt.Errorf(utils.Trace(err))}
+	}
+	defer tx.Rollback()
+
 	for _, record := range records {
-		user := models.User{
+		user := &models.User{
 			Username: record[0],
 			Age:      models.NewNullInt64(record[1]),
 		}
 
-		err := user.Create(env.DB)
+		err := user.Create(tx)
 		if err != nil {
 			return &StatusError{Code: 500, Err: fmt.Errorf(utils.Trace(err))}
 		}
@@ -42,11 +48,16 @@ func FillDBHandler(env *Env, w http.ResponseWriter, r *http.Request) *StatusErro
 
 		for _, product := range products {
 			product.UserID = user.ID
-			err := product.Create(env.DB)
+			err := product.Create(tx)
 			if err != nil {
 				return &StatusError{Code: 500, Err: fmt.Errorf(utils.Trace(err))}
 			}
 		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return &StatusError{Code: 500, Err: fmt.Errorf(utils.Trace(err))}
 	}
 
 	return nil
@@ -65,7 +76,18 @@ func CreateUserHandler(env *Env, w http.ResponseWriter, r *http.Request) *Status
 			Age:      models.NewNullInt64(r.FormValue("age")),
 		}
 
-		err := user.Create(env.DB)
+		tx, err := env.DB.Begin()
+		if err != nil {
+			return &StatusError{Code: 500, Err: fmt.Errorf(utils.Trace(err))}
+		}
+		defer tx.Rollback()
+
+		err = user.Create(tx)
+		if err != nil {
+			return &StatusError{Code: 500, Err: fmt.Errorf(utils.Trace(err))}
+		}
+
+		err = tx.Commit()
 		if err != nil {
 			return &StatusError{Code: 500, Err: fmt.Errorf(utils.Trace(err))}
 		}
