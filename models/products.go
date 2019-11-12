@@ -18,6 +18,7 @@ func (p *Product) Create(db *sql.DB) error {
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
 	}
+	defer stmt.Close()
 	res, err := stmt.Exec(p.Name, p.UserID)
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
@@ -39,6 +40,7 @@ func (p *Product) Update(db *sql.DB) error {
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(p.Name, p.UserID, p.ID)
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
@@ -55,6 +57,7 @@ func (p *Product) Delete(db *sql.DB) error {
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(p.ID)
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))

@@ -18,6 +18,7 @@ func (u *User) Create(db *sql.DB) error {
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
 	}
+	defer stmt.Close()
 	res, err := stmt.Exec(u.Username, u.Age)
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
@@ -39,6 +40,7 @@ func (u *User) Update(db *sql.DB) error {
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(u.Username, u.Age, u.ID)
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
@@ -55,6 +57,7 @@ func (u *User) Delete(db *sql.DB) error {
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(u.ID)
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
