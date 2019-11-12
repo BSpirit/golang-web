@@ -14,12 +14,7 @@ type Product struct {
 }
 
 func (p *Product) Create(tx *sql.Tx) error {
-	stmt, err := tx.Prepare("INSERT INTO products(name, user_id) VALUES(?, ?)")
-	if err != nil {
-		return fmt.Errorf(utils.Trace(err))
-	}
-	defer stmt.Close()
-	res, err := stmt.Exec(p.Name, p.UserID)
+	res, err := tx.Exec("INSERT INTO products(name, user_id) VALUES(?, ?)", p.Name, p.UserID)
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
 	}
@@ -36,12 +31,7 @@ func (p *Product) Update(tx *sql.Tx) error {
 	if p.ID == 0 {
 		return errors.New("no ID")
 	}
-	stmt, err := tx.Prepare("UPDATE products SET name=?, user_id=? WHERE id=?")
-	if err != nil {
-		return fmt.Errorf(utils.Trace(err))
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec(p.Name, p.UserID, p.ID)
+	_, err := tx.Exec("UPDATE products SET name=?, user_id=? WHERE id=?", p.Name, p.UserID, p.ID)
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
 	}
@@ -53,12 +43,7 @@ func (p *Product) Delete(tx *sql.Tx) error {
 	if p.ID == 0 {
 		return errors.New("no ID")
 	}
-	stmt, err := tx.Prepare("DELETE FROM products WHERE id=?")
-	if err != nil {
-		return fmt.Errorf(utils.Trace(err))
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec(p.ID)
+	_, err := tx.Exec("DELETE FROM products WHERE id=?", p.ID)
 	if err != nil {
 		return fmt.Errorf(utils.Trace(err))
 	}
