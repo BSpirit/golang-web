@@ -79,8 +79,6 @@ fieldset input {
 /* Button */
 
 button {
-    display: inline-flex;
-    align-items: center;
     padding: 8px 16px;
     margin-top: 8px;
     border-radius: 2px;
