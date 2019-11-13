@@ -1,15 +1,18 @@
 {{block "create_user" .}}
 {{template "header"}}
 
+<h2> Create User </h2>
 <form action=/create_user method=POST>
-    <label>
-        Username:
+    <fieldset>
+    <p>
+        <label>Username:</label>
         <input name="username">
-    </label>
-    <label>
-        Age:
+    </p>
+    <p>
+        <label>Age:</label>
         <input name="age">
-    </label>
+    </p>
+    </fieldset>
     <button type=submit>Submit form</button>
 </form>
 

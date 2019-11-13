@@ -2,15 +2,15 @@
 {{template "header"}}
 
 <form action=/users method=GET>
-    <label>
-        Username:
-        <input name="username">
-    </label>
-    <label>
-        Age:
-        <input name="age">
-    </label>
-    <button type=submit>Submit form</button>
+    <fieldset>
+        <p>
+            <label>Username:</label>
+            <input name="username">
+            <label>Age:</label>
+            <input name="age">
+            <button type=submit>Submit form</button>
+        </p>
+    </fieldset>
 </form>
 
 {{template "users_list" . }}
