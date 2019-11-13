@@ -1,17 +1,25 @@
 /* Global Styles */
 
 html {
-    font-family: 'Roboto', Arial, sans-serif;
     color: #333;
+    font-family: 'Roboto', Arial, sans-serif;
     -moz-osx-font-smoothing: grayscale;
 }
 
 body {
     margin: 0;
+    padding: 0;
 }
 
-.content {
+/* for footer placement */
+#main {
+    position: relative; 
+    min-height: 100vh;
+}
+
+#content {
     padding: 16px;
+    padding-bottom: 2.5rem; /* height of footer */
 }
 
 /* Text */
@@ -132,10 +140,10 @@ nav a.active {
 footer {
     width: 100%;
     bottom: 0;
-    position: fixed;
+    position: absolute;
     display: flex;
     justify-content: center;
     background-color: #2f2f2f;
-    padding: 5px;
+    height: 2.5rem;
     color: #f2f2f2;
 }
