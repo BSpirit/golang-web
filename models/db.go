@@ -46,7 +46,9 @@ func WhereClause(entries map[string][]string) (string, []interface{}) {
 				clauseBuilder = append(clauseBuilder, fmt.Sprintf("%s LIKE '%%' || ? || '%%'", key))
 			}
 		}
-		whereClause = " WHERE " + strings.Join(clauseBuilder, " AND ")
+		if whereClause != "" {
+			whereClause = " WHERE " + strings.Join(clauseBuilder, " AND ")
+		}
 	}
 
 	return whereClause, values
