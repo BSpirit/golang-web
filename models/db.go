@@ -38,14 +38,15 @@ func WhereClause(entries map[string][]string) (string, []interface{}) {
 	var whereClause string
 	var values []interface{}
 
-	if len(entries) != 0 {
-		var clauseBuilder []string
-		for key, value := range entries {
-			if value[0] != "" {
-				values = append(values, value[0])
-				clauseBuilder = append(clauseBuilder, fmt.Sprintf("%s LIKE '%%' || ? || '%%'", key))
-			}
+	var clauseBuilder []string
+	for key, value := range entries {
+		if value[0] != "" {
+			values = append(values, value[0])
+			clauseBuilder = append(clauseBuilder, fmt.Sprintf("%s LIKE '%%' || ? || '%%'", key))
 		}
+	}
+
+	if len(clauseBuilder) > 0 {
 		whereClause = " WHERE " + strings.Join(clauseBuilder, " AND ")
 	}
 
