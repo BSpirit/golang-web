@@ -1,2 +1,3 @@
 db/test.db
 web
+.DS_Store

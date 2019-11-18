@@ -5,10 +5,10 @@ import (
 	"runtime"
 )
 
-func Trace(err error) string {
+func Trace(err error) error {
 	pc := make([]uintptr, 1)
 	runtime.Callers(2, pc)
 	f := runtime.FuncForPC(pc[0])
 	_, line := f.FileLine(pc[0])
-	return fmt.Sprintf("%s line %d:\n\t%s", f.Name(), line, err)
+	return fmt.Errorf("%s line %d:\n\t%s", f.Name(), line, err)
 }
